@@ -1,5 +1,6 @@
-from datetime import date, datetime
-from pydantic import BaseModel, EmailStr
+from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 class UserLogin(BaseModel):
@@ -8,35 +9,27 @@ class UserLogin(BaseModel):
 
 
 class PatientBase(BaseModel):
-    first_name: str
-    last_name: str
-    birth_date: date | None = None
-    phone: str | None = None
+    first_name: str = Field(min_length=1, max_length=100)
+    last_name: str = Field(min_length=1, max_length=100)
+    dni: str = Field(min_length=5, max_length=30)
+    phone: str | None = Field(default=None, max_length=20)
+    email: EmailStr | None = None
 
 
 class PatientCreate(PatientBase):
     pass
 
 
-class Patient(PatientBase):
-    id: int
-
-    class Config:
-        from_attributes = True
-
-
-class AppointmentBase(BaseModel):
-    patient_id: int
-    starts_at: datetime
-    reason: str | None = None
-
-
-class AppointmentCreate(AppointmentBase):
+class PatientUpdate(PatientBase):
     pass
 
 
-class Appointment(AppointmentBase):
+class Patient(PatientBase):
     id: int
+    created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
+
+class DeleteResponse(BaseModel):
+    message: str
