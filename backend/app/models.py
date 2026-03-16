@@ -1,5 +1,9 @@
-from sqlalchemy import Date, DateTime, ForeignKey, String
+from datetime import datetime
+from typing import Optional
+
+from sqlalchemy import DateTime, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from .db import Base
 
 
@@ -15,19 +19,25 @@ class Patient(Base):
     __tablename__ = "patients"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    first_name: Mapped[str] = mapped_column(String(100))
-    last_name: Mapped[str] = mapped_column(String(100))
-    birth_date: Mapped[Date | None]
-    phone: Mapped[str | None] = mapped_column(String(20))
-    appointments: Mapped[list["Appointment"]] = relationship(back_populates="patient")
+    name: Mapped[str] = mapped_column(String(255))
+    email: Mapped[str] = mapped_column(String(255))
+    phone: Mapped[str] = mapped_column(String(50))
+
+    appointments: Mapped[list["Appointment"]] = relationship(
+        back_populates="patient"
+    )
 
 
 class Appointment(Base):
     __tablename__ = "appointments"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    patient_id: Mapped[int] = mapped_column(ForeignKey("patients.id"), nullable=False)
-    starts_at: Mapped[DateTime]
-    reason: Mapped[str | None] = mapped_column(String(255))
+    patient_id: Mapped[int] = mapped_column(
+        ForeignKey("patients.id"), nullable=False
+    )
+    starts_at: Mapped[datetime] = mapped_column(DateTime)
+    reason: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 
-    patient: Mapped[Patient] = relationship(back_populates="appointments")
+    patient: Mapped["Patient"] = relationship(
+        back_populates="appointments"
+    )
