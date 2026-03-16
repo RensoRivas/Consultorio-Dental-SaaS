@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function HomePage() {
   return (
     <main className="container">
@@ -8,6 +10,9 @@ export default function HomePage() {
         <li>✅ Gestión de pacientes</li>
         <li>✅ Gestión de citas</li>
       </ul>
+      <Link className="primary-btn" href="/patients">
+        Ir a pacientes
+      </Link>
     </main>
   );
 }

@@ -1,5 +1,8 @@
-from sqlalchemy import Date, DateTime, ForeignKey, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from datetime import datetime
+
+from sqlalchemy import DateTime, String, func
+from sqlalchemy.orm import Mapped, mapped_column
+
 from .db import Base
 
 
@@ -15,19 +18,13 @@ class Patient(Base):
     __tablename__ = "patients"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    first_name: Mapped[str] = mapped_column(String(100))
-    last_name: Mapped[str] = mapped_column(String(100))
-    birth_date: Mapped[Date | None]
-    phone: Mapped[str | None] = mapped_column(String(20))
-    appointments: Mapped[list["Appointment"]] = relationship(back_populates="patient")
-
-
-class Appointment(Base):
-    __tablename__ = "appointments"
-
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    patient_id: Mapped[int] = mapped_column(ForeignKey("patients.id"), nullable=False)
-    starts_at: Mapped[DateTime]
-    reason: Mapped[str | None] = mapped_column(String(255))
-
-    patient: Mapped[Patient] = relationship(back_populates="appointments")
+    first_name: Mapped[str] = mapped_column(String(100), nullable=False)
+    last_name: Mapped[str] = mapped_column(String(100), nullable=False)
+    dni: Mapped[str] = mapped_column(String(30), unique=True, index=True, nullable=False)
+    phone: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    email: Mapped[str | None] = mapped_column(String(255), unique=True, index=True, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
+    )
